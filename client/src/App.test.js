@@ -1,126 +1,157 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { AuthContext, AuthContextProvider } from "./Context/AuthContext";
+import "jest-localstorage-mock";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 
-// =========================================================================
-// 1. COMPONENT THỰC TẾ (MÔ PHỎNG ĐỂ TEST LOGIC LOGIN + CONTEXT)
-// =========================================================================
-function RealLoginForm() {
-  const { dispatch, error, loading } = React.useContext(AuthContext);
+import SignIn from "./Authentication/SignIn";
+import Cart from "./Cart/Cart";
+import LogoutLink from "./Authentication/LogoutLink";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    dispatch({ type: "LOGIN_START" });
+// Giả lập các mô-đun API bên thứ ba để tránh gọi mạng thật
+jest.mock("./API/CustomerAPI", () => ({
+  postLogin: jest.fn(),
+}));
+jest.mock("./API/CartAPI", () => ({
+  getCart: jest.fn(),
+  deleteFromCart: jest.fn(),
+  updateCart: jest.fn(),
+}));
+jest.mock(
+  "./convertMoney",
+  () => (value) => (value ? value.toLocaleString("vi-VN") : "0"),
+);
+jest.mock("alertifyjs", () => ({
+  set: jest.fn(),
+  error: jest.fn(),
+  success: jest.fn(),
+}));
 
-    try {
-      // Giả lập một lệnh gọi API Login thành công (dùng axios/fetch)
-      const mockCustomerData = {
-        _id: "60c72b2f9b1d8b0015f84b56",
-        fullname: "Nguyen Van A",
-        email: "test@gmail.com",
-        cart: [],
-      };
+import CustomerAPI from "./API/CustomerAPI";
+import CartAPI from "./API/CartAPI";
 
-      dispatch({ type: "LOGIN_SUCCESS", payload: mockCustomerData });
-    } catch (err) {
-      dispatch({ type: "LOGIN_FAILURE", payload: "Login Failed!" });
-    }
-  };
+describe("Frontend Logic, Component & State Comprehensive Tests", () => {
+  let user;
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="email">Email</label>
-      <input id="email" type="email" required />
-      {loading && <span>Loading...</span>}
-      {error && <span role="alert">{error}</span>}
-      <button type="submit">Sign In</button>
-    </form>
-  );
-}
-
-// =========================================================================
-// SUITE TEST FRONTEND LOGIC
-// =========================================================================
-describe("Frontend Logic & State Tests", () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
     jest.clearAllMocks();
+    // Khởi tạo instance userEvent cho mỗi ca kiểm thử để giả lập chính xác hành vi bấm phím và chuột
+    user = userEvent.setup();
   });
 
   // -----------------------------------------------------------------------
-  // TEST LUỒNG ĐĂNG NHẬP KÈM THEO STATE TRONG AUTHCONTEXT
+  // 1. TEST LUỒNG ĐĂNG NHẬP THỰC TẾ VỚI COMPONENT SIGNIN
   // -----------------------------------------------------------------------
-  test("renders login form and dispatches LOGIN_SUCCESS inside AuthContextProvider", async () => {
-    // Render component nằm gọn trong Provider để nhận giá trị State toàn cục
+  test("renders real SignIn component and dispatches LOGIN_SUCCESS on valid credentials", async () => {
+    const mockCustomerData = {
+      _id: "60c72b2f9b1d8b0015f84b56",
+      fullname: "Nguyen Van A",
+      email: "test@gmail.com",
+      cart: [],
+    };
+
+    // Giả lập API phản hồi thành công cấu trúc dữ liệu mong muốn
+    CustomerAPI.postLogin.mockResolvedValueOnce({ customer: mockCustomerData });
+
     render(
-      <AuthContextProvider>
-        <RealLoginForm />
-      </AuthContextProvider>,
+      <MemoryRouter initialEntries={["/signin"]}>
+        <AuthContextProvider>
+          <Routes>
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/" element={<div>Home Page</div>} />
+          </Routes>
+        </AuthContextProvider>
+      </MemoryRouter>,
     );
 
-    // Kiểm tra UI hiển thị đúng
-    const emailInput = screen.getByLabelText(/email/i);
-    expect(emailInput).toBeInTheDocument();
+    // Điền thông tin vào các ô nhập liệu bằng userEvent thay vì fireEvent
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
 
-    // Giả lập click nút Sign In
+    await user.type(emailInput, "test@gmail.com");
+    await user.type(passwordInput, "12345678");
+
     const submitButton = screen.getByRole("button", { name: /sign in/i });
-    fireEvent.click(submitButton);
+    await user.click(submitButton);
 
-    // Chờ state cập nhật và kiểm tra xem dữ liệu đã được tự động sync vào sessionStorage chưa
+    // Chờ đợi hệ thống đồng bộ dữ liệu vào sessionStorage của AuthContextProvider
     await waitFor(() => {
       const storedCustomer = JSON.parse(sessionStorage.getItem("customer"));
-      expect(storedCustomer).not.null;
+      expect(storedCustomer).not.toBeNull();
       expect(storedCustomer.fullname).toBe("Nguyen Van A");
       expect(storedCustomer.email).toBe("test@gmail.com");
     });
+
+    // Kiểm tra xem ứng dụng có chuyển hướng về trang chủ thành công hay không
+    expect(screen.getByText("Home Page")).toBeInTheDocument();
   });
 
   // -----------------------------------------------------------------------
-  // TEST GIỎ HÀNG KHÁCH VÃNG LAI
+  // 2. TEST GIỎ HÀNG KHÁCH VÃNG LAI LƯU TRỮ TRÊN LOCALSTORAGE
   // -----------------------------------------------------------------------
-  test('should persist data using the correct localStorage key "tempCart"', () => {
+  test('should persist and read data using the correct localStorage key "tempCart" inside Cart component', async () => {
     const mockCartData = [
-      { id: "prod_1", name: "iPhone", priceAt: 20000000, quantity: 1 },
+      {
+        productId: {
+          _id: "prod_1",
+          name: "iPhone",
+          price: 20000000,
+          images: ["iphone.jpg"],
+        },
+        quantity: 1,
+        priceAt: 20000000,
+      },
     ];
 
-    // Giả lập hành vi ghi vào localStorage của App
+    // Thiết lập trạng thái ban đầu của bộ nhớ tạm thời cho khách vãng lai
     localStorage.setItem("tempCart", JSON.stringify(mockCartData));
 
-    // Đọc lại từ localStorage kiểm tra tính chính xác của key
-    const storedCart = JSON.parse(localStorage.getItem("tempCart"));
+    render(
+      <MemoryRouter initialEntries={["/cart"]}>
+        <AuthContextProvider>
+          <Routes>
+            <Route path="/cart" element={<Cart />} />
+          </Routes>
+        </AuthContextProvider>
+      </MemoryRouter>,
+    );
 
-    expect(storedCart).toBeDefined();
-    expect(storedCart[0].name).toBe("iPhone");
-    expect(localStorage.getItem("tempCart")).toBeNull();
+    // Xác nhận giao diện hiển thị chính xác tên sản phẩm lấy từ localStorage
+    const productName = await screen.findByText("iPhone");
+    expect(productName).toBeInTheDocument();
+
+    // Kiểm tra dữ liệu duy trì chính xác trong bộ nhớ mock
+    const storedCart = JSON.parse(localStorage.getItem("tempCart"));
+    expect(storedCart).not.toBeNull();
+    expect(storedCart[0].productId.name).toBe("iPhone");
   });
 
   // -----------------------------------------------------------------------
-  // TEST LOGIC LOGOUT XÓA SESSIONSTORAGE
+  // 3. TEST LOGIC LOGOUT XÓA SESSIONSTORAGE QUA LOGOUTLINK COMPONENT
   // -----------------------------------------------------------------------
-  test("should clear customer data from sessionStorage on LOGOUT action", () => {
-    // Giả lập trạng thái đã đăng nhập sẵn trong sessionStorage
-    const existingUser = { _id: "123", fullname: "Gia Long" };
+  test("should clear customer data from sessionStorage on click LogoutLink", async () => {
+    const existingUser = { _id: "123", fullname: "Gia Long", cart: [] };
     sessionStorage.setItem("customer", JSON.stringify(existingUser));
 
-    // Tạo component giả lập nút bấm Logout để kích hoạt dispatch
-    const LogoutComponent = () => {
-      const { dispatch } = React.useContext(AuthContext);
-      return (
-        <button onClick={() => dispatch({ type: "LOGOUT" })}>Logout</button>
-      );
-    };
-
     render(
-      <AuthContextProvider>
-        <LogoutComponent />
-      </AuthContextProvider>,
+      <MemoryRouter initialEntries={["/"]}>
+        <AuthContextProvider>
+          <Routes>
+            <Route path="/" element={<LogoutLink />} />
+            <Route path="/signin" element={<div>Sign In Page</div>} />
+          </Routes>
+        </AuthContextProvider>
+      </MemoryRouter>,
     );
 
-    // Kích hoạt nút Logout
-    fireEvent.click(screen.getByRole("button", { name: /logout/i }));
+    const logoutButton = screen.getByText(/\( Đăng Xuất \)/i);
+    await user.click(logoutButton);
 
-    // Khẳng định sessionStorage buộc phải trống trơn
+    // Hệ thống buộc phải làm sạch bộ nhớ phiên làm việc của khách hàng này
     expect(sessionStorage.getItem("customer")).toBeNull();
+    expect(screen.getByText("Sign In Page")).toBeInTheDocument();
   });
 });
