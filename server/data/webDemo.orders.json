@@ -1,0 +1,38 @@
+[{
+  "_id": {
+    "$oid": "6a33fcbd9461378cd66b7c19"
+  },
+  "customerId": {
+    "$oid": "6a2d21a53698db91e31821a8"
+  },
+  "totalPrice": 204900000,
+  "status": "Mới",
+  "deliveryInfo": {
+    "fullname": "Test 04",
+    "email": "test04@gmail.com",
+    "phone": "0912345687",
+    "address": "17/55C MKT, KH"
+  },
+  "products": [
+    {
+      "productId": {
+        "$oid": "6a2d1bfe474f5937a484731e"
+      },
+      "quantity": 10,
+      "priceAt": 20490000,
+      "createdAt": {
+        "$date": "2026-06-18T13:54:07.664Z"
+      },
+      "updatedAt": {
+        "$date": "2026-06-19T02:31:34.777Z"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-06-18T14:12:13.247Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-19T02:31:34.777Z"
+  },
+  "__v": 0
+}]

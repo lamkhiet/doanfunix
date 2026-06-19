@@ -1,0 +1,14 @@
+[{
+  "_id": {
+    "$oid": "6a2a2b7df878ca934eb60279"
+  },
+  "name": "iphone",
+  "description": "iPhone",
+  "createdAt": {
+    "$date": "2026-06-11T03:29:01.158Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-11T03:29:01.158Z"
+  },
+  "__v": 0
+}]
