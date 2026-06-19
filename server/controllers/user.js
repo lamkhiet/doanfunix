@@ -1,20 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
-// exports.getAll = async (req, res, next) => {
-//   try {
-//     const users = await User.find();
-
-//     return res.status(200).json(users);
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-
-//     next(err);
-//   }
-// };
-
 exports.getUsers = async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.count) || 8;
@@ -51,7 +37,7 @@ exports.getDetail = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User không tồn tại!" });
+      return res.status(404).json({ message: "User Not Found!" });
     }
 
     return res.status(200).json(user);
@@ -68,18 +54,16 @@ exports.postLogin = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(401).json({ message: "Email không tồn tại!" });
+      return res.status(401).json({ message: "Email Not Found!" });
     }
 
     const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
-      return res.status(401).json({ message: "Sai mật khẩu!" });
+      return res.status(401).json({ message: "Wrong Password!" });
     }
 
     if (user.status === "Locked") {
-      return res
-        .status(403)
-        .json({ message: "Tài khoản của bạn đã bị khóa bởi Admin." });
+      return res.status(403).json({ message: "Account Locked By Admin." });
     }
 
     req.session.isUserLoggedIn = true;
@@ -93,7 +77,7 @@ exports.postLogin = async (req, res, next) => {
     await new Promise((resolve, reject) => {
       req.session.save((err) => {
         if (err) {
-          console.error("Lỗi khi lưu session:", err);
+          console.error("Session Error:", err);
           reject(err);
         } else {
           resolve();
@@ -122,14 +106,14 @@ exports.putUpdate = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User không tồn tại!" });
+      return res.status(404).json({ message: "User Not Found!" });
     }
 
     if (fullname !== undefined) user.fullname = fullname;
     if (phone !== undefined) user.phone = phone;
 
     await user.save();
-    res.status(200).json({ message: "Cập nhật user thành công!" });
+    res.status(200).json({ message: "Update User Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -140,25 +124,25 @@ exports.changePassword = async (req, res, next) => {
   const { userId, oldPassword, newPassword } = req.body;
 
   try {
-    if (req.user.id !== userId) {
+    if (req.session.user._id !== userId) {
       return res
         .status(403)
-        .json({ message: "Bạn không có quyền đổi mật khẩu của người khác!" });
+        .json({ message: "You Can't Change Order User Password!" });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User không tồn tại!" });
+    if (!user) return res.status(404).json({ message: "User Not Found!" });
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Mật khẩu cũ không chính xác!" });
+      return res.status(400).json({ message: "Wrong Password!" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedPassword;
 
     await user.save();
-    res.status(200).json({ message: "Đổi mật khẩu thành công!" });
+    res.status(200).json({ message: "Change Password Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -182,7 +166,7 @@ exports.createUser = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({ message: "Tạo tài khoản nhân viên thành công!" });
+    res.status(200).json({ message: "Create User Successfully!" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -198,7 +182,7 @@ exports.adminUpdateUser = async (req, res, next) => {
 
   try {
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User không tồn tại!" });
+    if (!user) return res.status(404).json({ message: "User Not Found!" });
 
     if (fullname !== undefined) user.fullname = fullname;
     if (email !== undefined) user.email = email;
@@ -207,7 +191,7 @@ exports.adminUpdateUser = async (req, res, next) => {
     if (status !== undefined) user.status = status;
 
     await user.save();
-    res.status(200).json({ message: "Admin cập nhật User thành công!" });
+    res.status(200).json({ message: "Update User Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -219,13 +203,13 @@ exports.adminResetPassword = async (req, res, next) => {
 
   try {
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User không tồn tại!" });
+    if (!user) return res.status(404).json({ message: "User Not Found!" });
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedPassword;
 
     await user.save();
-    res.status(200).json({ message: "Admin đã đặt lại mật khẩu thành công!" });
+    res.status(200).json({ message: "Reset Password Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -238,11 +222,11 @@ exports.deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User không tồn tại!" });
+      return res.status(404).json({ message: "User Not Found!" });
     }
 
     await User.findByIdAndDelete(userId);
-    res.status(200).json({ message: "Xóa user thành công!" });
+    res.status(200).json({ message: "Delete User Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);

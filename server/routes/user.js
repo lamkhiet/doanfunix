@@ -8,19 +8,14 @@ const {
   createUserValidate,
   updateUserValidate,
 } = require("../validators/user");
-const { idParamValidate } = require("../validators/delete");
 
 const router = express.Router();
 
-// router.get("", isAuth, userController.getAll);
-
 router.post("/login", loginValidate, validateError, userController.postLogin);
 
-router.get("/pagination", userController.getUsers);
+router.get("/pagination", isAuthor, userController.getUsers);
 
-router.get("/:userId", userController.getDetail);
-
-// router.post("/search", userController.postSearch);
+router.get("/:userId", isAuthor, userController.getDetail);
 
 router.put(
   "/update/:userId",
@@ -50,12 +45,6 @@ router.put(
 
 router.put("/admin/resetPassword", isAdmin, userController.adminResetPassword);
 
-router.delete(
-  "/:userId",
-  isAdmin,
-  idParamValidate,
-  validateError,
-  userController.deleteUser,
-);
+router.delete("/:userId", isAdmin, userController.deleteUser);
 
 module.exports = router;

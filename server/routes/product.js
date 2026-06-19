@@ -6,7 +6,6 @@ const {
   updateProductValidate,
 } = require("../validators/product");
 const validateError = require("../middleware/validateError");
-const { idParamValidate } = require("../validators/delete");
 
 const router = express.Router();
 
@@ -40,12 +39,6 @@ router.put(
   productController.putAdminUpdate,
 );
 
-router.delete(
-  "/:prodId",
-  isAdmin,
-  idParamValidate,
-  validateError,
-  productController.deleteProduct,
-);
+router.delete("/:prodId", isAdmin, productController.deleteProduct);
 
 module.exports = router;

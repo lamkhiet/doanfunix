@@ -1,7 +1,6 @@
 const express = require("express");
 const customerController = require("../controllers/customer");
 const { isAdmin, isAuthor } = require("../middleware/auth");
-const { idParamValidate } = require("../validators/delete");
 const validateError = require("../middleware/validateError");
 const {
   createCustomerValidate,
@@ -50,12 +49,6 @@ router.put(
   customerController.adminResetPassword,
 );
 
-router.delete(
-  "/:customerId",
-  isAdmin,
-  idParamValidate,
-  validateError,
-  customerController.deleteCustomer,
-);
+router.delete("/:customerId", isAdmin, customerController.deleteCustomer);
 
 module.exports = router;

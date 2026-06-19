@@ -39,10 +39,12 @@ exports.postCreateOrder = async (req, res, next) => {
   try {
     const customer = await Customer.findById(req.session.customer._id);
 
-    if (!customer || customer.cart.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Giỏ hàng trống hoặc tài khoản không tồn tại!" });
+    if (!customer) {
+      return res.status(400).json({ message: "Customer Not Found!" });
+    }
+
+    if (customer.cart.length === 0) {
+      return res.status(400).json({ message: "No Product In Cart!" });
     }
 
     const cartItems = customer.cart;
@@ -53,19 +55,19 @@ exports.postCreateOrder = async (req, res, next) => {
 
       if (!product) {
         return res.status(404).json({
-          message: `Một sản phẩm trong giỏ hàng của bạn không còn tồn tại trên hệ thống!`,
+          message: `Product Not Found!`,
         });
       }
 
-      if (product.status === "Ngừng kinh doanh") {
+      if (product.status === "Out of Stock") {
         return res.status(400).json({
-          message: `Sản phẩm "${product.name}" đã ngừng kinh doanh, không thể đặt mua.`,
+          message: `Product "${product.name}" Out of Stock!`,
         });
       }
 
       if (product.stock < item.quantity) {
         return res.status(400).json({
-          message: `Sản phẩm "${product.name}" không đủ số lượng trong kho. Hiện còn: ${product.stock}, bạn yêu cầu: ${item.quantity}`,
+          message: `Product "${product.name}" Out of Stock. Current Stock: ${product.stock}, Your Quantity: ${item.quantity}`,
         });
       }
 
@@ -110,7 +112,7 @@ exports.postCreateOrder = async (req, res, next) => {
 
     // const mailOptions = {
     //   from: '"E-Shop" <shopemail@gmail.com>',
-    //   to: email || customer.email, // 3. Gửi tới email người dùng nhập tại checkout
+    //   to: email || customer.email,
     //   subject: "Xác Nhận Đặt Hàng Thành Công ✔",
     //   html: `
     //     <h3>Cảm ơn bạn đã mua sắm tại cửa hàng!</h3>
@@ -123,14 +125,14 @@ exports.postCreateOrder = async (req, res, next) => {
 
     // transporter.sendMail(mailOptions, (error, info) => {
     //   if (error) {
-    //     console.log("Lỗi gửi email:", error);
+    //     console.log("Send Email Error:", error);
     //   } else {
-    //     console.log("Email đã được gửi thành công: " + info.response);
+    //     console.log("Send Email Successfully: " + info.response);
     //   }
     // });
     // ---- LOGIC GỬI EMAIL KẾT THÚC ----
 
-    res.status(201).json({ message: "Đặt hàng thành công!" });
+    res.status(201).json({ message: "Create Order Successfully!" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -175,7 +177,7 @@ exports.getDetail = async (req, res, next) => {
     const order = await Order.findById(orderId);
 
     if (!order) {
-      res.status(404).json({ message: "Đơn hàng không tồn tại!" });
+      res.status(404).json({ message: "Order Not Found!" });
     }
 
     return res.status(200).json(order);
@@ -194,7 +196,7 @@ exports.putUpdate = async (req, res, next) => {
   try {
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ message: "Đơn hàng không tồn tại!" });
+      return res.status(404).json({ message: "Order Not Found!" });
     }
 
     if (deliveryInfo) {
@@ -214,17 +216,16 @@ exports.putUpdate = async (req, res, next) => {
     }
 
     if (status !== undefined) {
-      if (status === "Đã hủy") {
-        if (order.status === "Hoàn thành") {
+      if (status === "Cancelled") {
+        if (order.status === "Completed") {
           return res.status(400).json({
-            message:
-              "Không thể hủy đơn hàng này vì đơn hàng đã ở trạng thái Hoàn thành!",
+            message: "Order Completed can't Cancell!",
           });
         }
 
-        if (order.status === "Đã hủy") {
+        if (order.status === "Cancelled") {
           return res.status(400).json({
-            message: "Đơn hàng này đã được hủy từ trước, không thể hủy lại!",
+            message: "Can't Cancel Order Again!",
           });
         }
 
@@ -248,7 +249,7 @@ exports.putUpdate = async (req, res, next) => {
     await order.save();
 
     res.status(200).json({
-      message: "Cập nhật chi tiết đơn hàng và đồng bộ kho thành công!",
+      message: "Update Order and Stock Successfully!",
       data: order,
     });
   } catch (err) {
@@ -264,11 +265,11 @@ exports.deleteOrder = async (req, res, next) => {
     const order = await Order.findById(orderId);
 
     if (!order) {
-      return res.status(404).json({ message: "Đơn hàng không tồn tại!" });
+      return res.status(404).json({ message: "Order Not Found!" });
     }
 
     await Order.findByIdAndDelete(orderId);
-    res.status(200).json({ message: "Xóa Đơn hàng thành công!" });
+    res.status(200).json({ message: "Delete Order Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);

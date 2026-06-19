@@ -19,14 +19,18 @@ const usersRoutes = require("./routes/user");
 const customersRoutes = require("./routes/customer");
 const ordersRoutes = require("./routes/order");
 
-//
-const MONGODB_URI = `mongodb+srv://test:EfOZwRzsOaDH0KOw@cluster0.jnncur8.mongodb.net/webDemo`;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 const httpServer = http.createServer(app);
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["http://localhost:3000", "http://localhost:3001"];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -62,11 +66,9 @@ const fileFilter = (req, file, cb) => {
 
 io.on("connection", (socket) => {
   console.log(`Connect ID: ${socket.id}`);
-
   socket.on("send_message", (data) => {
     io.emit("receive_message", data);
   });
-
   socket.on("disconnect", () => {
     console.log("Disconnected!");
   });
@@ -74,21 +76,12 @@ io.on("connection", (socket) => {
 
 app.set("io", io);
 
-const allowedOrigins = [
-  "https://your-client-app.vercel.app", // URL của Client App trên Vercel
-  "https://your-admin-app.vercel.app", // URL của Admin App trên Vercel
-  "http://localhost:3000", // Cho phép test dưới máy local
-  "http://localhost:3001", // Cho phép test dưới máy local
-];
-
 app.use(
   cors({
-    // origin: ["http://localhost:3000", "http://localhost:3001"],
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         return callback(null, true);
       }
-
       return callback(new Error("CORS Policy Error"), false);
     },
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -96,6 +89,7 @@ app.use(
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -110,14 +104,14 @@ app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 app.use(
   session({
-    secret: "my secret",
+    secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: false,
     store: store,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production" ? true : false,
+      secure: process.env.NODE_ENV === "production",
     },
   }),
 );
@@ -134,15 +128,6 @@ app.use("/users", usersRoutes);
 app.use("/customers", customersRoutes);
 app.use("/orders", ordersRoutes);
 
-// app.use("/", async (req, res, next) => {
-//   const customerId = req.session.customer._id;
-//   const customer = await Customer.findById(customerId);
-//   const customers = await Customer.find();
-//   console.log("Customers: ", customers);
-//   console.log("CustomerId: ", customerId);
-//   console.log("Customer: ", customer);
-// });
-
 const errorHandler = require("./middleware/error");
 const Customer = require("./models/customer");
 app.use(errorHandler);
@@ -153,7 +138,7 @@ mongoose
   .connect(MONGODB_URI)
   .then((result) => {
     httpServer.listen(PORT, () => {
-      console.log(`Công kết nối BackEnd: ${PORT}`);
+      console.log(`Cổng kết nối BackEnd: ${PORT}`);
       console.log(`Kết nối CSDL MongoDB thành công!`);
     });
   })

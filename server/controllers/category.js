@@ -49,7 +49,7 @@ exports.getDetail = async (req, res, next) => {
     const category = await Category.findById(categoryId);
 
     if (!category) {
-      res.status(404).json({ message: "Thương hiệu không tồn tại!" });
+      res.status(404).json({ message: "Category Not Found!" });
     }
 
     return res.status(200).json(category);
@@ -67,13 +67,13 @@ exports.postUpdate = async (req, res, next) => {
   try {
     const category = await Category.findById(categoryId);
     if (!category) {
-      return res.status(404).json({ message: "Thương hiệu không tồn tại!" });
+      return res.status(404).json({ message: "Category Not Found!" });
     }
 
     if (description !== undefined) category.description = description;
 
     await category.save();
-    res.status(200).json({ message: "Cập nhật Thương hiệu thành công!" });
+    res.status(200).json({ message: "Update Category Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -93,7 +93,7 @@ exports.postCreate = async (req, res, next) => {
 
     await category.save();
 
-    res.status(200).json({ message: "Tạo Thương hiệu thành công!" });
+    res.status(200).json({ message: "Create Category Successfully!" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -103,40 +103,17 @@ exports.postCreate = async (req, res, next) => {
   }
 };
 
-// exports.adminPostUpdate = async (req, res, next) => {
-//   const { categoryId, name, description } = req.body;
-
-//   try {
-//     const category = await Category.findById(categoryId);
-//     if (!category)
-//       return res
-//         .status(404)
-//         .json({ message: "Thương hiệu không tồn tại!" });
-
-//     if (name !== undefined) category.name = name;
-//     if (description !== undefined) category.description = description;
-
-//     await category.save();
-//     res
-//       .status(200)
-//       .json({ message: "Admin cập nhật Thương hiệu thành công!" });
-//   } catch (err) {
-//     if (!err.statusCode) err.statusCode = 500;
-//     next(err);
-//   }
-// };
-
 exports.deleteCategory = async (req, res, next) => {
   const categoryId = req.params.categoryId;
 
   try {
     const category = await User.findById(categoryId);
     if (!category) {
-      return res.status(404).json({ message: "Thương hiệu không tồn tại!" });
+      return res.status(404).json({ message: "Category Not Found!" });
     }
 
     await Category.findByIdAndDelete(categoryId);
-    res.status(200).json({ message: "Xóa Thương hiệu thành công!" });
+    res.status(200).json({ message: "Delete Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);

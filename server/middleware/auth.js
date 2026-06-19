@@ -1,12 +1,27 @@
+exports.isAnyAuth = (req, res, next) => {
+  const isCustomer =
+    req.session && req.session.isCustomerLoggedIn && req.session.customer;
+  const isStaff = req.session && req.session.isUserLoggedIn && req.session.user;
+
+  if (!isCustomer && !isStaff) {
+    const err = new Error("Please log in!");
+    err.statusCode = 401;
+    return next(err);
+  }
+
+  req.isCustomerRole = !!isCustomer;
+  req.isStaffRole = !!isStaff;
+
+  next();
+};
+
 exports.isAuth = (req, res, next) => {
   if (
     !req.session ||
     !req.session.isCustomerLoggedIn ||
     !req.session.customer
   ) {
-    const err = new Error(
-      "Vui lòng đăng nhập bằng Tài khoản Khách hàng để thực hiện hành động này.",
-    );
+    const err = new Error("Please log in with your Customer Account!");
     err.statusCode = 401;
     throw err;
   }
@@ -16,9 +31,7 @@ exports.isAuth = (req, res, next) => {
 
 exports.isAuthor = (req, res, next) => {
   if (!req.session || !req.session.isUserLoggedIn || !req.session.user) {
-    const err = new Error(
-      "Vui lòng đăng nhập bằng Tài khoản nhân viên để thực hiện hành động này.",
-    );
+    const err = new Error("Please log in with your User Account!");
     err.statusCode = 401;
     throw err;
   }
@@ -28,13 +41,13 @@ exports.isAuthor = (req, res, next) => {
 
 exports.isAdmin = (req, res, next) => {
   if (!req.session.user) {
-    const error = new Error("Không tìm thấy thông tin người dùng.");
+    const error = new Error("User Not Found!");
     error.statusCode = 401;
     throw error;
   }
 
   if (req.session.user.role !== "Admin") {
-    const error = new Error("Bạn không có quyền truy cập vào tài nguyên này.");
+    const error = new Error("No Access!");
     error.statusCode = 403;
     throw error;
   }

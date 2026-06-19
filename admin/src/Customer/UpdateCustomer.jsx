@@ -29,8 +29,8 @@ const UpdateCustomer = () => {
         addressRef.current.value = response.address;
         statusRef.current.value = response.status;
       } catch (error) {
-        console.error("Cập nhật thất bại!:", error);
-        alert("Tài khoảng Khách hàng không tồn tại!");
+        console.error("Update Error:", error);
+        alert("Customer Not Found!");
       }
     };
     fetchUser();
@@ -53,12 +53,12 @@ const UpdateCustomer = () => {
         response = await CustomerAPI.adminResetPassword(data);
       }
 
-      alert(response.message || "Xử lý mật khẩu thành công!");
+      alert(response.message || "Change Password Successfully!");
       if (oldPasswordRef.current) oldPasswordRef.current.value = "";
       newPasswordRef.current.value = "";
     } catch (error) {
       console.error(error);
-      alert("Có lỗi xảy ra khi đổi mật khẩu.");
+      alert("Change Password Failed!");
     }
   };
 
@@ -83,12 +83,12 @@ const UpdateCustomer = () => {
 
     try {
       const response = await apiMethod(data);
-      alert(response.message || "Cập nhật người dùng thành công!");
+      alert(response.message || "Update Customer Successfully!");
 
       navigate("/users");
     } catch (error) {
-      console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại, vui lòng kiểm tra lại kết nối.");
+      console.error("Update Error:", error);
+      alert("Update thất bại, vui lòng kiểm tra lại kết nối.");
     }
   };
 

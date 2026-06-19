@@ -17,7 +17,7 @@ const UpdateCategory = () => {
         nameRef.current.value = response.name;
         descriptionRef.current.value = response.description;
       } catch (error) {
-        console.error("Lỗi khi tải thông tin Thương hiệu:", error);
+        console.error("Fetch Error:", error);
       }
     };
     fetchProduct();
@@ -33,11 +33,11 @@ const UpdateCategory = () => {
 
     try {
       const response = await CategoryAPI.putUpdate(data);
-      alert(response.message || "Cập nhật Thương hiệu thành công!");
+      alert(response.message || "Update Error Successfully!");
       navigate("/categories");
     } catch (error) {
-      console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại, vui lòng kiểm tra lại logic Server.");
+      console.error("Update Error:", error);
+      alert("System Error!");
     }
   };
 

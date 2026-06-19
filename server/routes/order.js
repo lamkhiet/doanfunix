@@ -1,7 +1,6 @@
 const express = require("express");
 const orderController = require("../controllers/order");
-const { isAdmin, isAuth, isAuthor } = require("../middleware/auth");
-const { idParamValidate } = require("../validators/delete");
+const { isAdmin, isAuth, isAuthor, isAnyAuth } = require("../middleware/auth");
 const validateError = require("../middleware/validateError");
 const {
   createOrderValidate,
@@ -20,9 +19,9 @@ router.post(
   orderController.postCreateOrder,
 );
 
-router.get("/pagination", orderController.getOrders);
+router.get("/pagination", isAnyAuth, orderController.getOrders);
 
-router.get("/:orderId", orderController.getDetail);
+router.get("/:orderId", isAnyAuth, orderController.getDetail);
 
 router.put(
   "/update/:orderId",
@@ -32,12 +31,6 @@ router.put(
   orderController.putUpdate,
 );
 
-router.delete(
-  "/:orderId",
-  isAdmin,
-  idParamValidate,
-  validateError,
-  orderController.deleteOrder,
-);
+router.delete("/:orderId", isAdmin, orderController.deleteOrder);
 
 module.exports = router;

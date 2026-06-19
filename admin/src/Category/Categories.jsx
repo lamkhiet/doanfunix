@@ -47,7 +47,7 @@ function Categories(props) {
         setTotalPage(response.totalPage || 1);
         setTotalDocs(response.totalDocs || 0);
       } catch (err) {
-        console.error("Lỗi lấy dữ liệu:", err);
+        console.error("Fetch Error:", err);
       }
     };
 
@@ -55,7 +55,7 @@ function Categories(props) {
   }, [pagination]);
 
   const handlerDelete = async (id) => {
-    if (window.confirm("Bạn có muốn xóa?")) {
+    if (window.confirm("Are You Sure?")) {
       try {
         const response = await CategoryAPI.deleteCategory(id);
         alert(response.message);

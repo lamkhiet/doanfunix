@@ -3,48 +3,48 @@ import { Link } from "react-router-dom";
 
 const MENU_ITEMS = [
   {
-    title: "Quản lý User",
+    title: "Users",
     icon: "fas fa-users",
     children: [
-      { title: "Danh sách User", to: "/users", icon: "fas fa-list" },
-      { title: "Thêm mới User", to: "/users/new", icon: "fas fa-user-plus" },
+      { title: "User List", to: "/users", icon: "fas fa-list" },
+      { title: "New User", to: "/users/new", icon: "fas fa-user-plus" },
     ],
   },
   {
-    title: "Quản lý Khách hàng",
+    title: "Customers",
     icon: "fas fa-cubes",
     children: [
-      { title: "Danh sách Khách hàng", to: "/customers", icon: "fas fa-list" },
+      { title: "Customer List", to: "/customers", icon: "fas fa-list" },
       {
-        title: "Thêm mới Khách hàng",
+        title: "New Customer",
         to: "/customers/new",
         icon: "fas fa-user-plus",
       },
     ],
   },
   {
-    title: "Quản lý Sản phẩm",
+    title: "Products",
     icon: "fas fa-cubes",
     children: [
-      { title: "Danh sách Sản phẩm", to: "/products", icon: "fas fa-list" },
+      { title: "Product List", to: "/products", icon: "fas fa-list" },
       {
-        title: "Thêm mới Sản phẩm",
+        title: "New Product",
         to: "/products/new",
         icon: "fas fa-user-plus",
       },
     ],
   },
   {
-    title: "Quản lý Thương hiệu",
+    title: "Categories",
     icon: "fas fa-cubes",
     children: [
       {
-        title: "Danh sách Thương hiệu",
+        title: "Category List",
         to: "/categories",
         icon: "fas fa-list",
       },
       {
-        title: "Thêm mới Thương hiệu",
+        title: "New Category",
         to: "/categories/new",
         icon: "fas fa-user-plus",
       },
@@ -52,11 +52,11 @@ const MENU_ITEMS = [
   },
 
   {
-    title: "Quản lý Đơn hàng",
+    title: "Order",
     icon: "fas fa-cubes",
     children: [
       {
-        title: "Danh sách Đơn hàng",
+        title: "Order List",
         to: "/orders",
         icon: "fas fa-list",
       },
@@ -65,7 +65,6 @@ const MENU_ITEMS = [
 ];
 
 export default function Sidebar() {
-  // Lưu trạng thái menu đang mở (dựa trên title)
   const [activeMenu, setActiveMenu] = useState(null);
 
   const handleToggleMenu = (title) => {

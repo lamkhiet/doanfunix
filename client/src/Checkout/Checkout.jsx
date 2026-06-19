@@ -34,7 +34,7 @@ function Checkout() {
         setCarts(response || []);
         calculateTotal(response || []);
       } catch (error) {
-        console.error("Lỗi khi lấy giỏ hàng:", error);
+        console.error("Fetch Error:", error);
       }
     };
     fetchCart();
@@ -88,16 +88,14 @@ function Checkout() {
 
       if (response) {
         const userId = savedCustomer._id || localStorage.getItem("userId");
-        socket.emit("send_order", userId);
+        socket.emit("send_message", userId);
 
         setSuccess(true);
         setCarts([]);
       }
     } catch (error) {
       console.error("Lỗi khi đặt hàng:", error);
-      alert(
-        error.response?.data?.message || "Đặt hàng thất bại, vui lòng thử lại!",
-      );
+      alert(error.response?.data?.message || "Create Order Error!");
     } finally {
       setIsLoading(false);
     }

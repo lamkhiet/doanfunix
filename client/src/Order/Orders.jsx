@@ -11,7 +11,7 @@ function Orders(props) {
         const response = await OrderAPI.getCustomerOrder();
         setListCart(response);
       } catch (error) {
-        console.error("Lỗi khi lấy danh sách đơn hàng:", error);
+        console.error("Fetch Error:", error);
       }
     };
 

@@ -26,11 +26,11 @@ const CreateCustomer = () => {
 
     try {
       const response = await CustomerAPI.postCreate(data);
-      alert(response.message || "Tạo Tài khoản Khách hàng mới thành công!");
+      alert(response.message || "Create Customer Successfully!");
       navigate("/customers");
     } catch (error) {
-      console.error("Lỗi tạo mới:", error);
-      alert("Tạo mới thất bại, vui lòng kiểm tra lại thông tin.");
+      console.error("Create Customer Error:", error);
+      alert("Create Customer Failed!");
     }
   };
 

@@ -20,7 +20,7 @@ const Login = () => {
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      alert("Fill All!");
       return;
     }
 
@@ -38,10 +38,10 @@ const Login = () => {
       };
 
       dispatch({ type: "LOGIN_SUCCESS", payload: loggedInUser });
-      alert("Đăng nhập thành công! Chào mừng " + response.fullname);
+      alert("Login Successfully! Welcome " + response.fullname);
       navigate("/users");
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Đăng nhập thất bại!";
+      const errorMessage = err.response?.data?.message || "Login Failed!";
       dispatch({ type: "LOGIN_FAILURE", payload: errorMessage });
       alert(errorMessage);
     }

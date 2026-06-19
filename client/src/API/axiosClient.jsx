@@ -2,7 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 
 const axiosClient = axios.create({
-  baseURL: process.env.VITE_API_URL || "http://localhost:5000",
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000",
   headers: {
     "Content-Type": "application/json",
   },

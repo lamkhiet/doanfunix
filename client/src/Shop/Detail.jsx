@@ -23,7 +23,7 @@ function Detail(props) {
         const response = await ProductAPI.getAll();
         setProducts(response);
       } catch (err) {
-        console.error("Lỗi lấy danh sách sản phẩm:", err);
+        console.error("Fetch Error:", err);
       }
     };
     fetchData();
@@ -46,13 +46,13 @@ function Detail(props) {
               );
               setCategoryName(cateResponse?.name || response.category);
             } catch (cateErr) {
-              console.error("Lỗi lấy chi tiết danh mục:", cateErr);
+              console.error("Fetch Error:", cateErr);
               setCategoryName(response.category);
             }
           }
         }
       } catch (err) {
-        console.error("Lỗi lấy chi tiết sản phẩm:", err);
+        console.error("Fetch Error:", err);
       }
     };
 
@@ -92,12 +92,11 @@ function Detail(props) {
 
         if (response && response.cart) {
           authDispatch({ type: "REFRESH_CART", payload: response.cart });
-          alertify.success("Bạn Đã Thêm Hàng Thành Công!");
+          alertify.success("Add to Cart Successfully!");
         }
       } catch (err) {
-        console.error("Lỗi thêm vào giỏ hàng:", err);
-        const errorMsg =
-          err.response?.data?.message || "Có lỗi xảy ra khi thêm vào giỏ hàng!";
+        console.error("Add to Cart Error:", err);
+        const errorMsg = err.response?.data?.message || "Add to Cart Error!";
         alertify.error(errorMsg);
       }
     } else {
@@ -123,7 +122,7 @@ function Detail(props) {
       }
 
       localStorage.setItem("tempCart", JSON.stringify(tempCart));
-      alertify.success("Bạn Đã Thêm Hàng Thành Công!");
+      alertify.success("Add to Cart Successfully!");
     }
   };
 
@@ -409,7 +408,7 @@ function Detail(props) {
                   el.category === product.category && el._id !== product._id,
               )
               .map((item) => {
-                const isOutOfStock = item.status === "Hết hàng";
+                const isOutOfStock = item.status === "Out of Stock";
                 return (
                   <div className="col-lg-3 col-sm-6" key={item._id}>
                     <div
@@ -422,7 +421,7 @@ function Detail(props) {
                     >
                       <div className="d-block mb-3 position-relative overflow-hidden">
                         {isOutOfStock && (
-                          <div style={outOfStockBadgeStyle}>HẾT HÀNG</div>
+                          <div style={outOfStockBadgeStyle}>Out of Stock</div>
                         )}
                         <img
                           className="img-fluid w-100"

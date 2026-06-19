@@ -79,9 +79,7 @@ const UpdateProduct = () => {
 
     const totalImagesCount = oldImages.length + newFiles.length;
     if (totalImagesCount !== 5) {
-      alert(
-        `Tổng số lượng hình ảnh phải bằng 5 (Hiện tại có: ${totalImagesCount})`,
-      );
+      alert(`5 Images!!! (Current: ${totalImagesCount})`);
       return;
     }
 
@@ -106,11 +104,11 @@ const UpdateProduct = () => {
 
     try {
       const response = await apiMethod(formData);
-      alert(response.message || "Cập nhật sản phẩm thành công!");
+      alert(response.message || "Update Successfully!");
       navigate("/products");
     } catch (error) {
-      console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại, vui lòng kiểm tra lại logic Server.");
+      console.error("Update Error:", error);
+      alert("Update Error!");
     }
   };
 
@@ -119,10 +117,10 @@ const UpdateProduct = () => {
       <div className="container-fluid">
         <div className="card">
           <div className="card-body">
-            <h4 className="card-title">Cập nhật Sản phẩm: {productId}</h4>
+            <h4 className="card-title">Update Product: {productId}</h4>
             <form onSubmit={handleUpdate}>
               <div className="form-group">
-                <label>Tên Sản Phẩm</label>
+                <label>Name</label>
                 <input
                   type="text"
                   className="form-control"
@@ -131,9 +129,9 @@ const UpdateProduct = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Thương Hiệu</label>
+                <label>Category</label>
                 <select className="form-control" ref={categoryRef} required>
-                  <option value="">-- Chọn thương hiệu --</option>
+                  <option value="">-- Category --</option>
                   {categories.map((cat) => (
                     <option key={cat._id} value={cat._id}>
                       {cat.name}
@@ -142,7 +140,7 @@ const UpdateProduct = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label>Giá Thành</label>
+                <label>Price</label>
                 <input
                   type="number"
                   className="form-control"
@@ -151,7 +149,7 @@ const UpdateProduct = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Số Lượng Tồn Kho</label>
+                <label>Stock</label>
                 <input
                   type="number"
                   className="form-control"
@@ -160,21 +158,21 @@ const UpdateProduct = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Trạng Thái Sản Phẩm</label>
+                <label>Status</label>
                 <select
                   className="form-control"
                   ref={statusRef}
                   disabled={!isAdmin}
                 >
-                  <option value="Còn hàng">Còn hàng</option>
-                  <option value="Hết hàng">Hết hàng</option>
-                  <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                  <option value="In Stock">In Stock</option>
+                  <option value="Out of Stock">Out of Stock</option>
+                  <option value="Discontinued">Discontinued</option>
                 </select>
               </div>
 
               <div className="form-group">
                 <label style={{ fontWeight: "bold", display: "block" }}>
-                  Hình Ảnh Hiện Tại và Thay Thế (Yêu cầu đủ 5 ảnh)
+                  Images (5 images)
                 </label>
 
                 <div
@@ -243,7 +241,7 @@ const UpdateProduct = () => {
                         }}
                       />
                       <div style={{ fontSize: "12px", color: "green" }}>
-                        Mới chọn
+                        New image
                       </div>
                       <button
                         type="button"
@@ -278,7 +276,7 @@ const UpdateProduct = () => {
               </div>
 
               <div className="form-group">
-                <label>Mô Tả Sản Phẩm</label>
+                <label>Description</label>
                 <textarea
                   className="form-control"
                   rows="6"
@@ -292,7 +290,7 @@ const UpdateProduct = () => {
                 className="btn btn-success"
                 style={{ marginRight: "10px" }}
               >
-                Cập Nhật
+                Update
               </button>
               <button
                 type="button"

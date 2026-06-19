@@ -29,8 +29,8 @@ const productSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["Còn hàng", "Hết hàng", "Ngừng kinh doanh"],
-      default: "Còn hàng",
+      enum: ["In Stock", "Out of Stock", "Discontinued"],
+      default: "In Stock",
     },
     category: {
       type: Schema.Types.ObjectId,
@@ -46,9 +46,9 @@ productSchema.plugin(mongoosePaginate);
 productSchema.pre("save", function (next) {
   if (this.isModified("stock")) {
     if (this.stock === 0) {
-      this.status = "Hết hàng";
-    } else if (this.status === "Hết hàng" && this.stock > 0) {
-      this.status = "Còn hàng";
+      this.status = "Out of Stock";
+    } else if (this.status === "Out of Stock" && this.stock > 0) {
+      this.status = "In Stock";
     }
   }
 });

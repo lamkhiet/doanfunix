@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
 
     return res.status(400).json({
       success: false,
-      message: "Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra lại!",
+      message: "Data Invalid!",
       errors: error,
     });
   }

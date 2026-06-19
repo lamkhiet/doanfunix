@@ -1,7 +1,6 @@
 const express = require("express");
 const categoryController = require("../controllers/category");
 const { isAdmin, isAuthor } = require("../middleware/auth");
-const { idParamValidate } = require("../validators/delete");
 const validateError = require("../middleware/validateError");
 const {
   createCategoryValidate,
@@ -34,13 +33,6 @@ router.post(
   categoryController.postCreate,
 );
 
-router.delete(
-  "/:categoryId",
-  isAdmin,
-  idParamValidate,
-  validateError,
-
-  categoryController.deleteCategory,
-);
+router.delete("/:categoryId", isAdmin, categoryController.deleteCategory);
 
 module.exports = router;

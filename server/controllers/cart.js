@@ -8,9 +8,7 @@ exports.getCart = async (req, res, next) => {
       await Customer.findById(customerId).populate("cart.productId");
 
     if (!customer) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy Tài khoản Khách hàng!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
     }
 
     res.status(200).json(customer.cart);
@@ -28,14 +26,12 @@ exports.addToCart = async (req, res, next) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+      return res.status(404).json({ message: "Product Not Found!" });
     }
 
     const customer = await Customer.findById(customerId);
     if (!customer) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy tài khoản người dùng!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
     }
 
     if (!customer.cart) {
@@ -54,7 +50,7 @@ exports.addToCart = async (req, res, next) => {
 
       if (product.stock < finalQuantity) {
         return res.status(400).json({
-          message: `Số lượng trong kho không đủ! (Hiện còn: ${product.stock})`,
+          message: `Out of Stock! (Current Stock: ${product.stock})`,
         });
       }
       updatedCartItems[cartItemIndex].quantity = finalQuantity;
@@ -62,7 +58,7 @@ exports.addToCart = async (req, res, next) => {
     } else {
       if (product.stock < quantity) {
         return res.status(400).json({
-          message: `Số lượng trong kho không đủ! (Hiện còn: ${product.stock})`,
+          message: `Out of Stock! (Current Stock: ${product.stock})`,
         });
       }
       updatedCartItems.push({
@@ -79,7 +75,7 @@ exports.addToCart = async (req, res, next) => {
       await Customer.findById(customerId).populate("cart.productId");
 
     return res.status(201).json({
-      message: "Thêm Sản phẩm vào Giỏ hàng thành công!",
+      message: "Add Product Successfully!",
       cart: updatedCustomer.cart,
     });
   } catch (err) {
@@ -96,9 +92,7 @@ exports.updateCart = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy tài khoản khách hàng!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
     }
 
     const cartItemIndex = customer.cart.findIndex(
@@ -106,22 +100,20 @@ exports.updateCart = async (req, res, next) => {
     );
 
     if (cartItemIndex === -1) {
-      return res
-        .status(404)
-        .json({ message: "Sản phẩm không có trong Giỏ hàng!" });
+      return res.status(404).json({ message: "Product Not In Cart!" });
     }
 
     const product = await Product.findById(productId);
     if (product && product.stock < newQuantity) {
       return res.status(400).json({
-        message: `Số lượng trong kho không đủ! (Hiện còn: ${product.stock})`,
+        message: `Out of Stock! (Current Stock: ${product.stock})`,
       });
     }
 
     customer.cart[cartItemIndex].quantity = newQuantity;
     await customer.save();
 
-    res.status(200).json({ message: "Cập nhật Giỏ hàng thành công!" });
+    res.status(200).json({ message: "Update Cart Successfully!" });
   } catch (err) {
     next(err);
   }
@@ -134,9 +126,7 @@ exports.deleteFromCart = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy tài khoản khách hàng!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
     }
 
     customer.cart = customer.cart.filter(
@@ -144,7 +134,7 @@ exports.deleteFromCart = async (req, res, next) => {
     );
 
     await customer.save();
-    res.status(200).json({ message: "Xóa Sản phẩm thành công!" });
+    res.status(200).json({ message: "Delete Successfully!" });
   } catch (err) {
     next(err);
   }

@@ -47,7 +47,7 @@ function Customers(props) {
         setTotalPage(response.totalPage || 1);
         setTotalDocs(response.totalDocs || 0);
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
+        console.error("Fetch Error:", error);
       }
     };
 
@@ -55,15 +55,15 @@ function Customers(props) {
   }, [pagination]);
 
   const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa?")) {
+    if (window.confirm("Are You Sure?")) {
       try {
         await CustomerAPI.deleteCustomer(id);
 
         setCustomers((prev) => prev.filter((customer) => customer._id !== id));
-        alert("Xóa thành công!");
+        alert("Delete Successfully!");
       } catch (err) {
         console.error(err);
-        alert("Xóa thất bại!");
+        alert("Delete Failed!");
       }
     }
   };

@@ -51,7 +51,7 @@ exports.postSearch = async (req, res, next) => {
   const { searchTerm } = req.body;
 
   if (!searchTerm && searchTerm !== "") {
-    return res.status(400).json({ message: "Từ khóa tìm kiếm không hợp lệ!" });
+    return res.status(400).json({ message: "Search Term Error!" });
   }
   try {
     const products = await Product.find({
@@ -59,9 +59,7 @@ exports.postSearch = async (req, res, next) => {
     });
 
     if (!products || products.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy Sản phẩm tương tự!" });
+      return res.status(404).json({ message: "No Found Product!!" });
     }
 
     return res.status(200).json(products);
@@ -78,7 +76,7 @@ exports.getDetail = async (req, res, next) => {
     const product = await Product.findById(prodId);
 
     if (!product) {
-      res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+      res.status(404).json({ message: "Product Not Found!" });
     }
 
     return res.status(200).json(product);
@@ -105,7 +103,7 @@ exports.postCreate = async (req, res, next) => {
 
     if (!images || images.length !== 5) {
       return res.status(400).json({
-        message: "Phải có đủ 5 hình.",
+        message: "5 Images!!!",
       });
     }
 
@@ -124,10 +122,10 @@ exports.postCreate = async (req, res, next) => {
     const result = await newProduct.save();
 
     return res.status(201).json({
-      message: "Thêm Sản phẩm thành công!",
+      message: "Create Product Successfully!",
     });
   } catch (err) {
-    console.error("Lỗi chi tiết tại Server:", err);
+    console.error("Server Error:", err);
 
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -150,7 +148,7 @@ exports.putUpdate = async (req, res, next) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+      return res.status(404).json({ message: "Product Not Found!" });
     }
 
     let finalOldImages = [];
@@ -165,7 +163,7 @@ exports.putUpdate = async (req, res, next) => {
           if (fs.existsSync(filePath)) {
             fs.unlink(filePath, (err) => {
               if (err) {
-                console.error(`Lỗi khi xóa ảnh cũ ${fileName}:`, err);
+                console.error(`Delete Image ${fileName} Error:`, err);
               }
             });
           }
@@ -182,7 +180,7 @@ exports.putUpdate = async (req, res, next) => {
 
     if (updatedImages.length !== 5) {
       return res.status(400).json({
-        message: "Tổng số lượng hình ảnh của sản phẩm phải luôn bằng 5.",
+        message: "5 Images!!!",
       });
     }
 
@@ -195,7 +193,7 @@ exports.putUpdate = async (req, res, next) => {
     product.images = updatedImages;
 
     await product.save();
-    res.status(200).json({ message: "Cập nhật sản phẩm thành công!" });
+    res.status(200).json({ message: "Update Product Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -219,7 +217,7 @@ exports.putAdminUpdate = async (req, res, next) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+      return res.status(404).json({ message: "Product Not Found!" });
     }
 
     let finalOldImages = [];
@@ -234,7 +232,7 @@ exports.putAdminUpdate = async (req, res, next) => {
           if (fs.existsSync(filePath)) {
             fs.unlink(filePath, (err) => {
               if (err) {
-                console.error(`Lỗi khi xóa ảnh cũ ${fileName}:`, err);
+                console.error(`Delete Image ${fileName} Error:`, err);
               }
             });
           }
@@ -251,7 +249,7 @@ exports.putAdminUpdate = async (req, res, next) => {
 
     if (updatedImages.length !== 5) {
       return res.status(400).json({
-        message: "Tổng số lượng hình ảnh của sản phẩm phải luôn bằng 5.",
+        message: "5 Images!!!",
       });
     }
 
@@ -265,7 +263,7 @@ exports.putAdminUpdate = async (req, res, next) => {
     product.images = updatedImages;
 
     await product.save();
-    res.status(200).json({ message: "Cập nhật sản phẩm thành công!" });
+    res.status(200).json({ message: "Update Product Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -279,16 +277,16 @@ exports.deleteProduct = async (req, res, next) => {
     const product = await Product.findById(prodId);
 
     if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+      return res.status(404).json({ message: "Product Not Found!" });
     }
     if (product.images && product.images.length > 0) {
-      roduct.images.forEach((fileName) => {
+      product.images.forEach((fileName) => {
         const filePath = path.join(__dirname, "..", "images", fileName);
 
         if (fs.existsSync(filePath)) {
           fs.unlink(filePath, (err) => {
             if (err) {
-              console.error(`Lỗi khi xóa ảnh ${fileName}:`, err);
+              console.error(`Delete Image ${fileName} Error:`, err);
             }
           });
         }
@@ -296,7 +294,7 @@ exports.deleteProduct = async (req, res, next) => {
     }
 
     await Product.findByIdAndDelete(prodId);
-    res.status(200).json({ message: "Xóa Sản phẩm thành công!" });
+    res.status(200).json({ message: "Delete Product Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);

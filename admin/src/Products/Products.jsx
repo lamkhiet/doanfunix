@@ -49,7 +49,7 @@ function Products(props) {
         setTotalPage(response.totalPage || 1);
         setTotalDocs(response.totalDocs || 0);
       } catch (err) {
-        console.error("Lỗi lấy dữ liệu:", err);
+        console.error("Fetch Error:", err);
       }
     };
 

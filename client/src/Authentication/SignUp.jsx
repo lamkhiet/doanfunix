@@ -42,7 +42,6 @@ function SignUp() {
     try {
       setLoading(true);
 
-      // console.log("Dữ liệu đăng ký:", formData);
       await CustomerAPI.postSignUp(formData);
 
       setLoading(false);
@@ -53,7 +52,7 @@ function SignUp() {
       const msg =
         err.response?.data?.errors?.[0]?.msg ||
         err.response?.data?.message ||
-        "Hệ thống bận, vui lòng thử lại!";
+        "System Error!";
       setError(msg);
     }
   };

@@ -29,14 +29,10 @@ function Shop(props) {
   });
 
   const handlerChangeSort = (value) => {
-    console.log("Value: ", value);
-
     setSort(value);
   };
 
   const handlerChangePage = (value) => {
-    console.log("Value: ", value);
-
     setPagination({
       page: value,
       count: pagination.count,
@@ -46,8 +42,6 @@ function Shop(props) {
   };
 
   const handlerSearch = (value) => {
-    console.log("Value: ", value);
-
     setPagination({
       page: pagination.page,
       count: pagination.count,
@@ -57,8 +51,6 @@ function Shop(props) {
   };
 
   const handlerCategory = (value) => {
-    console.log("Value: ", value);
-
     setPagination({
       page: pagination.page,
       count: pagination.count,
@@ -89,7 +81,7 @@ function Shop(props) {
           setTotalPage(response.totalPage);
         }
       } catch (error) {
-        console.error("Lỗi khi fetch data: ", error);
+        console.error("Fetch Error: ", error);
       }
     };
 
@@ -116,94 +108,6 @@ function Shop(props) {
           </div>
         </div>
       </section>
-
-      {/* -------------Modal Product----------------- */}
-      {products &&
-        products.map((value) => (
-          <div
-            className="modal fade show"
-            id={`product_${value._id}`}
-            key={value._id}
-          >
-            <div
-              className="modal-dialog modal-lg modal-dialog-centered"
-              role="document"
-            >
-              <div className="modal-content">
-                <div className="modal-body p-0">
-                  <div className="row align-items-stretch">
-                    <div className="col-lg-6 p-lg-0">
-                      <img
-                        style={{ width: "100%" }}
-                        className="product-view d-block h-100 bg-cover bg-center"
-                        src={
-                          value?.images?.[0]?.startsWith("http")
-                            ? value.images[0]
-                            : `http://localhost:5000/images/${value?.images?.[4] || ""}`
-                        }
-                        alt={value?.name || "Product image"}
-                        data-lightbox={`product_${value._id}`}
-                      />
-                      <img className="d-none" href={value.images[1]} alt="" />
-                      <img className="d-none" href={value.images[2]} alt="" />
-                    </div>
-                    <div className="col-lg-6">
-                      {/* Để tắt modal phải có class="close" và data-dissmiss="modal" và aria-label="Close" */}
-                      <Link
-                        className="close p-4"
-                        type="button"
-                        to="#section_product"
-                        data-dismiss="modal"
-                        aria-label="Close"
-                      >
-                        ×
-                      </Link>
-                      <div className="p-5 my-md-4">
-                        <ul className="list-inline mb-2">
-                          <li className="list-inline-item m-0">
-                            <i className="fas fa-star small text-warning"></i>
-                          </li>
-                          <li className="list-inline-item m-0">
-                            <i className="fas fa-star small text-warning"></i>
-                          </li>
-                          <li className="list-inline-item m-0">
-                            <i className="fas fa-star small text-warning"></i>
-                          </li>
-                          <li className="list-inline-item m-0">
-                            <i className="fas fa-star small text-warning"></i>
-                          </li>
-                          <li className="list-inline-item m-0">
-                            <i className="fas fa-star small text-warning"></i>
-                          </li>
-                        </ul>
-                        <h2 className="h4">{value.name}</h2>
-                        <p className="text-muted">
-                          {convertMoney(value.price)} VND
-                        </p>
-                        <p className="text-small mb-4">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit. In ut ullamcorper leo, eget euismod orci. Cum
-                          sociis natoque penatibus et magnis dis parturient
-                          montes nascetur ridiculus mus. Vestibulum ultricies
-                          aliquam convallis.
-                        </p>
-                        <div className="row align-items-stretch mb-4">
-                          <div className="col-sm-5 pl-sm-0 fix_addwish">
-                            <Link className="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center justify-content-center px-0">
-                              <i className="far fa-heart mr-2"></i>
-                              Add Too Wish List
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      {/* -------------Modal Product----------------- */}
 
       <section className="py-5">
         <div className="container p-0">

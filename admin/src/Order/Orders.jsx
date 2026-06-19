@@ -48,7 +48,7 @@ function Orders(props) {
         setTotalPage(response.totalPage || 1);
         setTotalDocs(response.totalDocs || 0);
       } catch (err) {
-        console.error("Lỗi lấy dữ liệu:", err);
+        console.error("Fetch Error:", err);
       }
     };
 
@@ -56,7 +56,7 @@ function Orders(props) {
   }, [pagination]);
 
   const handlerDelete = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa?")) {
+    if (window.confirm("Are You Sure?")) {
       try {
         const response = await OrderAPI.deleteOrder(id);
         alert(response.message);

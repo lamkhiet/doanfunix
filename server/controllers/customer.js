@@ -7,18 +7,16 @@ exports.postLogin = async (req, res, next) => {
   try {
     const customer = await Customer.findOne({ email: email });
     if (!customer) {
-      return res.status(401).json({ message: "Email không tồn tại!" });
+      return res.status(401).json({ message: "Email Not Found!" });
     }
 
     const isEqual = await bcrypt.compare(password, customer.password);
     if (!isEqual) {
-      return res.status(401).json({ message: "Sai mật khẩu!" });
+      return res.status(401).json({ message: "Wrong Password!" });
     }
 
     if (customer.status === "Locked") {
-      return res
-        .status(403)
-        .json({ message: "Tài khoản của bạn đã bị khóa bởi Admin." });
+      return res.status(403).json({ message: "Account Locked By Admin." });
     }
 
     const sessionCart = req.session.cart || [];
@@ -54,11 +52,11 @@ exports.postLogin = async (req, res, next) => {
 
     return req.session.save((err) => {
       if (err) {
-        console.log("Lỗi lưu session:", err);
+        console.log("Save Session Error:", err);
         return next(err);
       }
       return res.status(200).json({
-        message: "Đăng nhập thành công!",
+        message: "Login Successfully!",
         customer: req.session.customer,
       });
     });
@@ -107,7 +105,7 @@ exports.getDetail = async (req, res, next) => {
     const customer = await Customer.findById(customerId);
 
     if (!customer) {
-      res.status(404).json({ message: "Tài khoản Khách hàng không tồn tại!" });
+      res.status(404).json({ message: "Customer Not Found!" });
     }
 
     return res.status(200).json(customer);
@@ -135,7 +133,7 @@ exports.postCreate = async (req, res, next) => {
 
     await customer.save();
 
-    res.status(200).json({ message: "Tạo tài khoản Khách hàng thành công!" });
+    res.status(200).json({ message: "Create Customer Successfully!" });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -151,9 +149,7 @@ exports.putUpdate = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer) {
-      return res
-        .status(404)
-        .json({ message: "Tài khoảng Khách hàng không tồn tại!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
     }
 
     if (fullname !== undefined) customer.fullname = fullname;
@@ -161,9 +157,7 @@ exports.putUpdate = async (req, res, next) => {
     if (address !== undefined) customer.address = address;
 
     await customer.save();
-    res
-      .status(200)
-      .json({ message: "Cập nhật tài khoảng Khách hàng thành công!" });
+    res.status(200).json({ message: "Update Customer Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -176,20 +170,18 @@ exports.changePassword = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer)
-      return res
-        .status(404)
-        .json({ message: "Tài khoản Khách hàng không tồn tại!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
 
     const isMatch = await bcrypt.compare(oldPassword, customer.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Mật khẩu cũ không chính xác!" });
+      return res.status(400).json({ message: "Wrong Password!" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     customer.password = hashedPassword;
 
     await customer.save();
-    res.status(200).json({ message: "Đổi mật khẩu thành công!" });
+    res.status(200).json({ message: "Change Password Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -204,9 +196,7 @@ exports.putAdminUpdate = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer)
-      return res
-        .status(404)
-        .json({ message: "Tài khoảng Khách hàng không tồn tại!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
 
     if (fullname !== undefined) customer.fullname = fullname;
     if (email !== undefined) customer.email = email;
@@ -215,9 +205,7 @@ exports.putAdminUpdate = async (req, res, next) => {
     if (status !== undefined) customer.status = status;
 
     await customer.save();
-    res
-      .status(200)
-      .json({ message: "Admin cập nhật tài khoảng Khách hàng thành công!" });
+    res.status(200).json({ message: "Update Customer Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -230,15 +218,13 @@ exports.adminResetPassword = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer)
-      return res
-        .status(404)
-        .json({ message: "Tài khoảng Khách hàng không tồn tại!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     customer.password = hashedPassword;
 
     await customer.save();
-    res.status(200).json({ message: "Admin đã đặt lại mật khẩu thành công!" });
+    res.status(200).json({ message: "Reset Password Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -251,13 +237,11 @@ exports.deleteCustomer = async (req, res, next) => {
   try {
     const customer = await Customer.findById(customerId);
     if (!customer) {
-      return res
-        .status(404)
-        .json({ message: "Tài khoản Khách hàng không tồn tại!" });
+      return res.status(404).json({ message: "Customer Not Found!" });
     }
 
     await Customer.findByIdAndDelete(customerId);
-    res.status(200).json({ message: "Xóa tài khoản Khách hàng thành công!" });
+    res.status(200).json({ message: "Delete Customer Successfully!" });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);

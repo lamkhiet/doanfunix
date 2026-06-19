@@ -29,7 +29,7 @@ function Products(props) {
       {/* -------------Product----------------- */}
       {sortedProducts &&
         sortedProducts.map((item) => {
-          const isOutOfStock = item.status === "Hết hàng";
+          const isOutOfStock = item.status === "Out of Stock";
 
           return (
             <div className="col-lg-4 col-sm-6 Section_Category" key={item._id}>
@@ -41,7 +41,7 @@ function Products(props) {
               >
                 <div className="position-relative mb-3 overflow-hidden">
                   {isOutOfStock && (
-                    <div style={outOfStockBadgeStyle}>HẾT HÀNG</div>
+                    <div style={outOfStockBadgeStyle}>Out of Stock</div>
                   )}
 
                   {isOutOfStock ? (

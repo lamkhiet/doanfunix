@@ -26,7 +26,7 @@ const UpdateOrder = () => {
         setOrder({
           customerId: response.customerId || "",
           totalPrice: response.totalPrice || 0,
-          status: response.status || "Mới",
+          status: response.status || "New",
           deliveryInfo: response.deliveryInfo || {
             fullname: "",
             email: "",
@@ -36,7 +36,7 @@ const UpdateOrder = () => {
           products: response.products || [],
         });
       } catch (error) {
-        console.error("Lỗi khi tải thông tin Đơn hàng:", error);
+        console.error("Fetch Error:", error);
       }
     };
     fetchProduct();
@@ -57,11 +57,11 @@ const UpdateOrder = () => {
     e.preventDefault();
     try {
       const response = await OrderAPI.putUpdate(orderId, order);
-      alert(response.message || "Cập nhật đơn hàng thành công!");
+      alert(response.message || "Update Order Successfully!");
       navigate("/orders");
     } catch (error) {
-      console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại, vui lòng kiểm tra lại hệ thống.");
+      console.error("Update Error:", error);
+      alert("Update Failed!");
     }
   };
 
@@ -70,7 +70,7 @@ const UpdateOrder = () => {
       <div className="container-fluid">
         <div className="card">
           <div className="card-body">
-            <h4 className="card-title">Cập nhật Đơn hàng: {orderId}</h4>
+            <h4 className="card-title">Update Order: {orderId}</h4>
             <form onSubmit={handleUpdate}>
               <div className="row">
                 <div className="form-group col-md-6">
@@ -95,12 +95,12 @@ const UpdateOrder = () => {
                       setOrder({ ...order, status: e.target.value })
                     }
                   >
-                    <option value="Mới">Mới</option>
-                    <option value="Đã xác nhận">Đã xác nhận</option>
-                    <option value="Đang giao">Đang giao</option>
-                    <option value="Đã giao">Đã giao</option>
-                    <option value="Hoàn thành">Hoàn thành</option>
-                    <option value="Đã hủy">Đã hủy</option>
+                    <option value="New">New</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Delivering">Delivering</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
                   </select>
                 </div>
               </div>

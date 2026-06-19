@@ -26,11 +26,11 @@ const CreateUser = () => {
 
     try {
       const response = await UserAPI.adminCreate(data);
-      alert(response.message || "Tạo người dùng mới thành công!");
+      alert(response.message || "Create User Successfully!");
       navigate("/users");
     } catch (error) {
-      console.error("Lỗi tạo mới:", error);
-      alert("Tạo mới thất bại, vui lòng kiểm tra lại thông tin.");
+      console.error("Error:", error);
+      alert("Create User Failed!");
     }
   };
 

@@ -14,12 +14,12 @@ const CreateCategory = () => {
 
     try {
       await CategoryAPI.postCreate(formData);
-      alert("Thêm Thương hiệu thành công!");
+      alert("Create Category Successfully!");
 
       e.target.reset();
     } catch (error) {
-      console.error("Lỗi hệ thống:", error);
-      alert("Đã có lỗi xảy ra, vui lòng kiểm tra lại cấu trúc dữ liệu.");
+      console.error("System Error:", error);
+      alert("System Error!");
     }
   };
 

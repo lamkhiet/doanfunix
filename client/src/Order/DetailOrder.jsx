@@ -14,7 +14,7 @@ function DetailOrder(props) {
         console.log(response);
         setOrder(response);
       } catch (error) {
-        console.error("Lỗi khi lấy chi tiết đơn hàng:", error);
+        console.error("Fetch Error:", error);
       }
     };
 
@@ -22,11 +22,7 @@ function DetailOrder(props) {
   }, [orderId]);
 
   if (!order) {
-    return (
-      <div className="container p-5 text-center">
-        Đang tải thông tin đơn hàng...
-      </div>
-    );
+    return <div className="container p-5 text-center">Loading...</div>;
   }
 
   return (

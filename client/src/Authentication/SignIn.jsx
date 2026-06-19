@@ -17,7 +17,7 @@ function SignIn() {
     const email = emailRef.current.value.trim();
     const password = passwordRef.current.value.trim();
 
-    if (!email || !password) return alert("Vui lòng điền đầy đủ thông tin");
+    if (!email || !password) return alert("Fill All!");
 
     try {
       setError("");
@@ -33,7 +33,7 @@ function SignIn() {
 
       navigate("/");
     } catch (err) {
-      const msg = err.response?.data?.message || "Đăng nhập thất bại!";
+      const msg = err.response?.data?.message || "Login Failed!";
       dispatch({ type: "LOGIN_FAILURE", payload: msg });
       setError(msg);
       setLoading(false);

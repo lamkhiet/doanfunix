@@ -31,10 +31,10 @@ const UpdateUser = () => {
         if (statusRef.current)
           statusRef.current.value = response.status || "Active";
       } catch (error) {
-        console.error("Lỗi khi fetch:", error);
+        console.error("Fetch Error:", error);
 
         if (error.response && error.response.status === 404) {
-          alert("User không tồn tại!");
+          alert("User Not Found!");
         }
       }
     };
@@ -59,16 +59,16 @@ const UpdateUser = () => {
       } else if (isAdmin) {
         response = await UserAPI.adminResetPassword(data);
       } else {
-        alert("Bạn không có quyền thực hiện hành động này!");
+        alert("No Access!");
         return;
       }
 
-      alert(response.message || "Xử lý mật khẩu thành công!");
+      alert(response.message || "Change Password Successfully!");
       if (oldPasswordRef.current) oldPasswordRef.current.value = "";
       newPasswordRef.current.value = "";
     } catch (error) {
       console.error(error);
-      alert("Có lỗi xảy ra khi đổi mật khẩu.");
+      alert("Change Password Error!");
     }
   };
 
@@ -90,12 +90,12 @@ const UpdateUser = () => {
 
     try {
       const response = await apiMethod(data);
-      alert(response.message || "Cập nhật người dùng thành công!");
+      alert(response.message || "Update User Successfully!");
 
       navigate("/users");
     } catch (error) {
-      console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại, vui lòng kiểm tra lại kết nối.");
+      console.error("Update Error:", error);
+      alert("Update Failed!");
     }
   };
 
@@ -106,11 +106,11 @@ const UpdateUser = () => {
           <div className="card-body">
             <h4 className="card-title">Update User: {userId}</h4>
             <hr />
-            <h4 className="card-title mt-4">Đổi mật khẩu / Reset Password</h4>
+            <h4 className="card-title mt-4">Đổi Password / Reset Password</h4>
             <form onSubmit={handleChangePassword}>
               {isSelf && (
                 <div className="form-group">
-                  <label>Mật khẩu cũ</label>
+                  <label>Password cũ</label>
                   <input
                     type="password"
                     className="form-control"
@@ -122,7 +122,7 @@ const UpdateUser = () => {
 
               <div className="form-group">
                 <label>
-                  {isSelf ? "Mật khẩu mới" : "Đặt lại mật khẩu mới cho User"}
+                  {isSelf ? "Password mới" : "Đặt lại Password mới cho User"}
                 </label>
                 <input
                   type="password"
@@ -131,16 +131,16 @@ const UpdateUser = () => {
                   required
                   placeholder={
                     isAdmin && !isSelf
-                      ? "Nhập mật khẩu mặc định mới"
-                      : "Nhập mật khẩu mới"
+                      ? "Nhập Password mặc định mới"
+                      : "Nhập Password mới"
                   }
                 />
               </div>
               <br />
               <button type="submit" className="btn btn-warning">
                 {isSelf
-                  ? "Cập nhật mật khẩu"
-                  : "Reset Mật Khẩu với quyền Admin"}
+                  ? "Cập nhật Password"
+                  : "Reset Password với quyền Admin"}
               </button>
             </form>
 

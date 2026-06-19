@@ -31,7 +31,7 @@ const CreateProduct = () => {
     const images = fileInputRef.current.files;
 
     if (images.length !== 5) {
-      alert("Vui lòng upload chính xác **5** hình ảnh!");
+      alert("5 Images!");
       return;
     }
 
@@ -56,14 +56,9 @@ const CreateProduct = () => {
       formData.append("images", images[i]);
     }
 
-    console.log("--- Kiểm tra dữ liệu FormData ---");
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
     try {
       await ProductAPI.postCreate(formData);
-      alert("Thêm sản phẩm thành công!");
+      alert("Create Product Successfully!");
 
       e.target.reset();
     } catch (error) {
@@ -74,10 +69,10 @@ const CreateProduct = () => {
           .map((err) => `${err.field}: ${err.message}`)
           .join("\n");
 
-        alert(`Lỗi đầu vào:\n${message}`);
+        alert(`Error:\n${message}`);
       } else {
-        console.error("Lỗi hệ thống:", error);
-        alert("Đã có lỗi xảy ra, vui lòng kiểm tra lại kết nối.");
+        console.error("Error:", error);
+        alert("Create Error!");
       }
     }
   };
@@ -91,7 +86,7 @@ const CreateProduct = () => {
             onSubmit={handleSubmit}
           >
             <div className="form-group">
-              <label>Tên Sản Phẩm</label>
+              <label>Name</label>
               <input
                 type="text"
                 className="form-control"
@@ -101,7 +96,7 @@ const CreateProduct = () => {
               />
             </div>
             <div className="form-group">
-              <label>Giá Sản Phẩm</label>
+              <label>Price</label>
               <input
                 type="number"
                 className="form-control"
@@ -112,7 +107,7 @@ const CreateProduct = () => {
             </div>
 
             <div className="form-group">
-              <label>Mô Tả Sản Phẩm</label>
+              <label>Description</label>
               <textarea
                 className="form-control"
                 rows="6"
@@ -122,7 +117,7 @@ const CreateProduct = () => {
               ></textarea>
             </div>
             <div className="form-group">
-              <label>Số Lượng Tồn Kho</label>
+              <label>Stock</label>
               <input
                 type="number"
                 min="0"
@@ -133,22 +128,20 @@ const CreateProduct = () => {
               ></input>
             </div>
             <div className="form-group">
-              <label>Trạng Thái Sản Phẩm</label>
+              <label>Status</label>
 
               <select
                 className="form-control"
                 ref={statusRef}
-                defaultValue="Còn hàng"
+                defaultValue="In Stock"
               >
-                <option value="Còn hàng">Còn hàng</option>
-                <option value="Hết hàng">Hết hàng</option>
-                <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                <option value="In Stock">In Stock</option>
+                <option value="Out of Stock">Out of Stock</option>
+                <option value="Discontinued">Discontinued</option>
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="fileUpload">
-                Tải Hình Ảnh Sản Phẩm (5 images)
-              </label>
+              <label htmlFor="fileUpload">Images (5 images)</label>
               <input
                 type="file"
                 className="form-control-file"
@@ -159,9 +152,9 @@ const CreateProduct = () => {
               />
             </div>
             <div className="form-group">
-              <label>Thương Hiệu</label>
+              <label>Category</label>
               <select className="form-control" ref={categoryRef} required>
-                <option value="">-- Chọn thương hiệu --</option>
+                <option value="">-- Category --</option>
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat._id}>
                     {cat.name}
@@ -171,7 +164,7 @@ const CreateProduct = () => {
             </div>
 
             <button type="submit" className="btn btn-primary">
-              Submit
+              Create
             </button>
           </form>
         </div>

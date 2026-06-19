@@ -18,14 +18,14 @@ const orderSchema = new Schema(
     status: {
       type: String,
       enum: [
-        "Mới",
-        "Đã xác nhận",
-        "Đang giao",
-        "Đã giao",
-        "Hoàn thành",
-        "Đã hủy",
+        "New",
+        "Confirmed",
+        "Delivering",
+        "Delivered",
+        "Completed",
+        "Cancelled",
       ],
-      default: "Mới",
+      default: "New",
     },
     deliveryInfo: {
       fullname: {

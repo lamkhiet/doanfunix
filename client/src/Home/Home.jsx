@@ -115,7 +115,7 @@ function Home(props) {
           <div className="row">
             {products &&
               products.map((item) => {
-                const isOutOfStock = item.status === "Hết hàng";
+                const isOutOfStock = item.status === "Out of Stock";
                 return (
                   <div className="col-xl-3 col-lg-4 col-sm-6" key={item._id}>
                     <div
@@ -128,7 +128,7 @@ function Home(props) {
                     >
                       <div className="position-relative mb-3 overflow-hidden">
                         {isOutOfStock && (
-                          <div style={outOfStockBadgeStyle}>HẾT HÀNG</div>
+                          <div style={outOfStockBadgeStyle}>Out of Stock</div>
                         )}
                         <div className="badge text-white badge-"></div>
                         <img
