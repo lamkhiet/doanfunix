@@ -1,0 +1,31 @@
+import axios from "axios";
+import queryString from "query-string";
+
+const axiosClient = axios.create({
+  baseURL: process.env.VITE_API_URL || "http://localhost:5000",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+  paramsSerializer: (params) => queryString.stringify(params),
+});
+
+axios.defaults.withCredentials = true;
+
+axiosClient.interceptors.request.use(async (config) => {
+  return config;
+});
+
+axiosClient.interceptors.response.use(
+  (response) => {
+    if (response && response.data) {
+      return response.data;
+    }
+    return response;
+  },
+  (error) => {
+    throw error;
+  },
+);
+
+export default axiosClient;

@@ -1,0 +1,19 @@
+[{
+  "_id": {
+    "$oid": "6a2d21a53698db91e31821a8"
+  },
+  "fullname": "Test 04",
+  "email": "test04@gmail.com",
+  "password": "$2b$12$7v/SZa6rDcV9Jm5y3wIwV.xoCnPEjWJXt3doC1srvdB7LPFGqmYo2",
+  "phone": "0912345687",
+  "address": "17/55 MKT, KH",
+  "status": "Active",
+  "cart": [],
+  "createdAt": {
+    "$date": "2026-06-13T09:23:49.394Z"
+  },
+  "updatedAt": {
+    "$date": "2026-06-18T14:12:14.241Z"
+  },
+  "__v": 4
+}]
